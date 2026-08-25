@@ -3,7 +3,7 @@ import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
 import Navbar from "../components/Navbar";
 
-const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const API = import.meta.env.VITE_API_URL ?? "";
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PASSWORD_RE = /^(?=.*\d).{8,}$/;
 

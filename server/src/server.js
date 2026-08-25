@@ -1,5 +1,6 @@
 require("dotenv").config();
 const express = require("express");
+const path = require("path");
 const cors = require("cors");
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
@@ -13,6 +14,13 @@ app.use(express.json());
 app.get("/api/health", (req, res) => res.json({ status: "ok" }));
 app.use("/api/auth", authRoutes);
 app.use("/api/classes", classRoutes);
+
+// Serve React build in production
+app.use(express.static(path.join(__dirname, "../../client/dist")));
+
+app.get(/^(?!\/api).*/, (req, res) => {
+  res.sendFile(path.join(__dirname, "../../client/dist/index.html"));
+});
 
 app.use(errorHandler);
 

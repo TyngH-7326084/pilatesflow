@@ -24,7 +24,14 @@ export default function Navbar() {
             <button className="btn-ghost" onClick={handleLogout}>Logout</button>
           </>
         ) : (
-          <span>Guest</span>
+          <>
+            <button className="btn-secondary" onClick={() => navigate("/", { state: { mode: "signup" } })}>
+              Sign Up
+            </button>
+            <button className="btn-ghost" onClick={() => navigate("/", { state: { mode: "login" } })}>
+              Login
+            </button>
+          </>
         )}
       </div>
     </header>

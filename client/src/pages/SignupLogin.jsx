@@ -1,6 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Navbar from "../components/Navbar";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
@@ -8,12 +8,15 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PASSWORD_RE = /^(?=.*\d).{8,}$/;
 
 export default function SignupLogin() {
-  const [mode, setMode] = useState("signup"); // wireframe defaults to Sign Up view
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [mode, setMode] = useState(location.state?.mode || "signup");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const navigate = useNavigate();
+
+
 
   const validate = () => {
     if (!EMAIL_RE.test(email)) return "Enter a valid email address.";

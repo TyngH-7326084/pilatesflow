@@ -1,16 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import SignupLogin from "./pages/SignupLogin";
+import Schedule from "./pages/Schedule";
 import AdminDashboard from "./pages/AdminDashboard";
-import Navbar from "./components/Navbar";
-
-function Schedule() {
-  return (
-    <>
-      <Navbar />
-      <h2>Member schedule (coming soon)</h2>
-    </>
-  );
-}
 
 function App() {
   return (

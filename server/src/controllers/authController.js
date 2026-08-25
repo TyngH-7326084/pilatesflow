@@ -29,19 +29,23 @@ async function signup(req, res) {
       .json({ error: "Password must be at least 8 characters and include a number." });
   }
 
-  const existing = await User.findOne({ email: email.toLowerCase() });
-  if (existing) {
-    return res.status(409).json({ error: "An account with that email already exists." });
+  try {
+    const existing = await User.findOne({ email: email.toLowerCase() });
+    if (existing) {
+      return res.status(409).json({ error: "An account with that email already exists." });
+    }
+
+    const passwordHash = await bcrypt.hash(password, 10);
+    const user = await User.create({ email, passwordHash, role: "member" });
+
+    const token = signToken(user);
+    return res.status(201).json({
+      token,
+      user: { id: user._id, email: user.email, role: user.role },
+    });
+  } catch (err) {
+    return res.status(500).json({ error: "Could not create account." });
   }
-
-  const passwordHash = await bcrypt.hash(password, 10);
-  const user = await User.create({ email, passwordHash, role: "member" });
-
-  const token = signToken(user);
-  return res.status(201).json({
-    token,
-    user: { id: user._id, email: user.email, role: user.role },
-  });
 }
 
 // POST /api/auth/login
@@ -54,21 +58,25 @@ async function login(req, res) {
     return res.status(400).json({ error: "Email and password are required." });
   }
 
-  const user = await User.findOne({ email: email.toLowerCase() });
-  if (!user) {
-    return res.status(401).json({ error: "Invalid email or password." });
-  }
+  try {
+    const user = await User.findOne({ email: email.toLowerCase() });
+    if (!user) {
+      return res.status(401).json({ error: "Invalid email or password." });
+    }
 
-  const match = await bcrypt.compare(password, user.passwordHash);
-  if (!match) {
-    return res.status(401).json({ error: "Invalid email or password." });
-  }
+    const match = await bcrypt.compare(password, user.passwordHash);
+    if (!match) {
+      return res.status(401).json({ error: "Invalid email or password." });
+    }
 
-  const token = signToken(user);
-  return res.status(200).json({
-    token,
-    user: { id: user._id, email: user.email, role: user.role },
-  });
+    const token = signToken(user);
+    return res.status(200).json({
+      token,
+      user: { id: user._id, email: user.email, role: user.role },
+    });
+  } catch (err) {
+    return res.status(500).json({ error: "Login failed." });
+  }
 }
 
 module.exports = { signup, login };

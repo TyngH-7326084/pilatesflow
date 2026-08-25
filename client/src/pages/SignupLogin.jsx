@@ -8,13 +8,14 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PASSWORD_RE = /^(?=.*\d).{8,}$/;
 
 export default function SignupLogin() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [mode, setMode] = useState(location.state?.mode || "signup");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const navigate = useNavigate();
-  const location = useLocation();
+
 
 
   const validate = () => {

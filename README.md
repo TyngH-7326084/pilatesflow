@@ -48,6 +48,11 @@ server/   Express API
 - No password reset flow
 - Notifications limited to in-app success/error messages
 - Single studio, single timezone (Brisbane) assumed
+- "Spots available" reflects total class capacity, not capacity minus
+  active bookings — booking-count tracking is not yet implemented
+  (see decision log, 25 Aug)
+- No published/cancelled status on classes — the current schema does not
+  model class state, so all created classes are treated as visible/active
 
 ## GenAI disclosure
 

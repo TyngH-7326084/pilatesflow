@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import SignupLogin from "./pages/SignupLogin";
 import Schedule from "./pages/Schedule";
 import AdminDashboard from "./pages/AdminDashboard";
+import MyBookings from "./pages/MyBookings";
 
 function App() {
   return (
@@ -10,6 +11,7 @@ function App() {
         <Route path="/" element={<SignupLogin />} />
         <Route path="/schedule" element={<Schedule />} />
         <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/bookings" element={<MyBookings />} />
       </Routes>
     </BrowserRouter>
   );

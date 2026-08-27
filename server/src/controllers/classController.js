@@ -1,7 +1,8 @@
 const Class = require("../models/Class");
+const Booking = require("../models/Booking");
 
 // POST /api/classes  (Admin only)
-// AC: missing field or capacity <= 0 -> rejected, no class created.
+// US5 acceptance criteria: missing field or capacity <= 0 -> rejected, no class created.
 async function createClass(req, res) {
   const { className, instructorName, classDateTime, capacity } = req.body;
 
@@ -35,11 +36,22 @@ async function createClass(req, res) {
 }
 
 // GET /api/classes
-// AC: schedule list refreshes and reflects newly created classes immediately.
+// US5 acceptance criteria: schedule list refreshes and reflects newly created classes immediately.
 async function getClasses(req, res) {
   try {
     const classes = await Class.find().sort({ classDateTime: 1 });
-    return res.json(classes);
+
+    const withAvailability = await Promise.all(
+      classes.map(async (c) => {
+        const bookedCount = await Booking.countDocuments({ class: c._id });
+        return {
+          ...c.toObject(),
+          availableSpots: c.capacity - bookedCount,
+        };
+      })
+    );
+
+    return res.json(withAvailability);
   } catch (err) {
     return res.status(500).json({ error: "Could not load classes." });
   }

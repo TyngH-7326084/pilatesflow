@@ -18,6 +18,11 @@ export default function Navbar() {
         <span>PilatesFlow</span>
       </div>
       <div className="navbar-status">
+        {role === "member" && (
+          <button className="btn-ghost" onClick={() => navigate("/bookings")}>
+            My Bookings
+          </button>
+        )}
         {role ? (
           <>
             <span>Logged in as {role === "admin" ? "Admin" : "Member"}</span>

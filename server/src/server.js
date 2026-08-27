@@ -6,6 +6,7 @@ const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const classRoutes = require("./routes/classRoutes");
 const errorHandler = require("./middleware/errorHandler");
+const bookingRoutes = require("./routes/bookingRoutes")
 
 const app = express();
 app.use(cors());
@@ -14,6 +15,7 @@ app.use(express.json());
 app.get("/api/health", (req, res) => res.json({ status: "ok" }));
 app.use("/api/auth", authRoutes);
 app.use("/api/classes", classRoutes);
+app.use("/api/bookings", bookingRoutes);
 
 // Serve React build in production
 app.use(express.static(path.join(__dirname, "../../client/dist")));

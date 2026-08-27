@@ -8,29 +8,61 @@ export default function Schedule() {
   const [classes, setClasses] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [bookingMessages, setBookingMessages] = useState({}); // { [classId]: { type, text } }
+  const [bookingInProgress, setBookingInProgress] = useState(null);
+
+  const role = localStorage.getItem("role"); // "admin" | "member" | null
+
+  const loadClasses = async () => {
+    try {
+      const { data } = await axios.get(`${API}/api/classes`);
+      const now = new Date();
+      const sevenDaysOut = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+
+      const upcoming = data.filter((c) => {
+        const classTime = new Date(c.classDateTime);
+        return classTime >= now && classTime <= sevenDaysOut;
+      });
+
+      setClasses(upcoming);
+    } catch (err) {
+      setError("Could not load the schedule. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const loadClasses = async () => {
-      try {
-        const { data } = await axios.get(`${API}/api/classes`);
-        const now = new Date();
-        const sevenDaysOut = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-
-        // AC: display upcoming classes only (next 7 days, matching wireframe)
-        const upcoming = data.filter((c) => {
-          const classTime = new Date(c.classDateTime);
-          return classTime >= now && classTime <= sevenDaysOut;
-        });
-
-        setClasses(upcoming);
-      } catch (err) {
-        setError("Could not load the schedule. Please try again later.");
-      } finally {
-        setLoading(false);
-      }
-    };
     loadClasses();
   }, []);
+
+  const handleBook = async (classId) => {
+    setBookingInProgress(classId);
+    setBookingMessages((prev) => ({ ...prev, [classId]: null }));
+    try {
+      const token = localStorage.getItem("token");
+      await axios.post(
+        `${API}/api/bookings`,
+        { classId },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setBookingMessages((prev) => ({
+        ...prev,
+        [classId]: { type: "success", text: "Booked! See you in class." },
+      }));
+      await loadClasses(); // refresh spot counts
+    } catch (err) {
+      setBookingMessages((prev) => ({
+        ...prev,
+        [classId]: {
+          type: "error",
+          text: err.response?.data?.error || "Could not book this class.",
+        },
+      }));
+    } finally {
+      setBookingInProgress(null);
+    }
+  };
 
   return (
     <>
@@ -64,10 +96,37 @@ export default function Schedule() {
                       minute: "2-digit",
                     })}
                   </p>
+                  {bookingMessages[c._id] && (
+                    <p
+                      role="alert"
+                      className={
+                        bookingMessages[c._id].type === "success"
+                          ? "success-banner"
+                          : "auth-error"
+                      }
+                    >
+                      {bookingMessages[c._id].text}
+                    </p>
+                  )}
                 </div>
-                {/* Note: no booking-count tracking yet, so "spots" reflects
-                    total capacity for now — see decision log 25 Aug. */}
-                <span className="class-capacity">{c.capacity} spots available</span>
+                <div className="class-list-actions">
+                  <span className="class-capacity">
+                    {c.availableSpots} spots available
+                  </span>
+                  {role === "member" && c.availableSpots > 0 && (
+                    <button
+                      className="btn-primary"
+                      onClick={() => handleBook(c._id)}
+                      disabled={bookingInProgress === c._id}
+                    >
+                      {bookingInProgress === c._id ? "Booking..." : "Book"}
+                    </button>
+                  )}
+                  {role === "member" && c.availableSpots === 0 && (
+                    <span className="auth-error">Class full</span>
+                  )}
+                </div>
+
               </li>
             ))}
           </ul>

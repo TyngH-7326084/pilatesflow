@@ -339,3 +339,14 @@
   border: 1px solid var(--border);
 }
 .schedule-subtitle { color: var(--text); font-size: 14px; margin-bottom: 20px; }
+
+.class-list-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.class-list-item .btn-ghost {
+  flex: none;
+}

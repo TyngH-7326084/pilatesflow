@@ -7,7 +7,8 @@ bookings; admins create classes.
 ## Architecture summary
 
 - **Client:** React (Vite), calls the API over HTTPS/JSON.
-- **Server:** Node.js + Express REST API.
+- **Server:** Node.js + Express REST API, serving the built client as static
+  files in production (single-port deployment).
 - **Database:** MongoDB (Atlas), accessed via Mongoose.
 - **Auth:** JWT issued on signup/login, passwords hashed with bcrypt, role
   stored on the user document (`admin` | `member`).
@@ -15,11 +16,14 @@ bookings; admins create classes.
 ```
 client/   React app (Vite)
 server/   Express API
-  src/config      DB connection
-  src/models      Mongoose schemas
-  src/controllers Route handlers / business logic
-  src/routes      Express routers
-  src/middleware  Error handling, async wrapper
+  src/pages Schedule, MyBookings, SignupLogin, AdminDashboard
+  rc/components Navbar
+  server/ Express API
+  src/config DB connection
+  src/models Mongoose schemas (User, Class, Booking)
+  rc/controllers Route handlers / business logic
+  src/routes Express routers
+  src/middleware Auth, error handling, async wrapper
 ```
 
 ## Setup (local development)
@@ -37,7 +41,7 @@ server/   Express API
 
 ## Deployment
 
-- **Public URL:** _TBD — add EC2 public IP or domain once deployed_
+- **Public URL:** 'http://3.25.57.146:5000' Note: this IP may change if the instance restarts
 - **Deployment type:** Manual (CI/CD is out of scope for this assignment)
 - **Deployment steps:** see `DEPLOYMENT.md`
 
@@ -48,12 +52,8 @@ server/   Express API
 - No password reset flow
 - Notifications limited to in-app success/error messages
 - Single studio, single timezone (Brisbane) assumed
-- "Spots available" reflects total class capacity, not capacity minus
-  active bookings — booking-count tracking is not yet implemented
-  (see decision log, 25 Aug)
 - No published/cancelled status on classes — the current schema does not
   model class state, so all created classes are treated as visible/active
-
-## GenAI disclosure
-
-See Section 6 of the project report for the GenAI evidence log and reflection.
+- Booking capacity check is sequential (check-then-book), not atomic —
+  assumes bookings are not submitted simultaneously by multiple members for
+  the same class (see decision log entry on 24 Aug)

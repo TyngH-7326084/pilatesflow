@@ -43,7 +43,6 @@ server/   Express API
 
 - **Public URL:** 'http://3.25.57.146:5000' Note: this IP may change if the instance restarts
 - **Deployment type:** Manual (CI/CD is out of scope for this assignment)
-- **Deployment steps:** see `DEPLOYMENT.md`
 
 ## Known limitations (Phase 1)
 

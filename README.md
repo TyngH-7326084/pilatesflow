@@ -36,12 +36,12 @@ server/   Express API
 2. Copy `server/.env.example` to `server/.env` and fill in:
    - `MONGODB_URI` — your MongoDB Atlas connection string
    - `JWT_SECRET` — any long random string
-3. Run the API: `cd server && npm run dev` (default port 5000)
+3. Run the API: `cd server && npm run dev` (default port 3000)
 4. Run the client: `cd client && npm run dev` (default port 5173)
 
 ## Deployment
 
-- **Public URL:** 'http://3.25.57.146:5000' Note: this IP may change if the instance restarts
+- **Public URL:** 'http://32.236.237.225:3000' Note: this IP may change if the instance restarts
 - **Deployment type:** Manual (CI/CD is out of scope for this assignment)
 
 ## Known limitations (Phase 1)
